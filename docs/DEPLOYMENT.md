@@ -85,7 +85,9 @@ is enforced by code even before TTL deletes the documents.
 ## 4. Codemagic
 
 1. Connect this GitHub repository to Codemagic and use `codemagic.yaml`.
-2. Run **ios-validation** first. It resolves Firebase iOS SDK 11.15.0, builds the
+2. The root configuration contains **ios-validation** and **screenshots** only,
+   so configuration discovery works without any signing integrations or secrets.
+   Run **screenshots** for app captures or **ios-validation** first. It resolves Firebase iOS SDK 11.15.0, builds the
    app and extension, and runs six state XCTest cases on an available iPhone
    Simulator. Missing Firebase config intentionally shows setup instructions;
    missing heads show a dashed outline above the supplied bodies. No signing is needed for this workflow.
@@ -102,7 +104,13 @@ it must match APP_BUNDLE_ID. The App Store Connect .p8 stays in the integration.
 Do not add these credentials as proxy-backed chat secrets: Codemagic needs them
 in its own build machine, and signing keys are files, not HTTP request tokens.
 
-4. In App Store Connect create a TestFlight tester group named **Lydia and Connor**.
+4. After the `feed_connor` variable group and **Feed Connor ASC** integration
+   are configured, copy the `testflight` entry from `docs/testflight.codemagic.yaml`
+   into the root `codemagic.yaml` under its existing `workflows` key. Preserve
+   the other workflows; do not introduce a second `workflows` key. Commit/push
+   the change, then check the configuration in Codemagic again. The template
+   intentionally uses `$APP_BUNDLE_ID` from the now-configured variable group.
+   In App Store Connect create a TestFlight tester group named **Lydia and Connor**.
 5. Run **testflight** after all nine originals and Firebase config are present.
    It checks assets/config, selects provisioning profiles, assigns BUILD_NUMBER,
    archives both targets, exports an IPA and uploads it. Make sure BUILD_NUMBER

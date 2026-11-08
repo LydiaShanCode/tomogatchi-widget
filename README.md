@@ -15,7 +15,8 @@ and two-frame pixel bodies. No web wrapper.
   widget snapshots, static WidgetKit timelines, and an App Intent gift button.
 - App, widget, and unit-test Xcode targets; four widget previews and a parent preview.
 - Firebase callable functions, deny-by-default rules, backend tests, Codemagic
-  simulator validation and signed TestFlight workflows.
+  simulator validation and screenshot workflows, plus a signed TestFlight template
+  enabled after account configuration.
 
 ## Current delivery limits
 

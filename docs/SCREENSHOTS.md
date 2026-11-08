@@ -5,7 +5,8 @@ iOS Simulator; no native screenshots have been captured here.
 
 In Codemagic, select this repository/branch and run the **screenshots** workflow
 from `codemagic.yaml`. No Apple signing, TestFlight or Firebase credentials are
-needed. The runner needs access to this repository and its included PNG assets.
+needed. The root configuration excludes the unconfigured TestFlight workflow;
+its release template is in `docs/testflight.codemagic.yaml`. The runner needs access to this repository and its included PNG assets.
 
 The workflow builds the actual app on an iPhone Simulator and runs five XCUITest
 cases, capturing six screens:

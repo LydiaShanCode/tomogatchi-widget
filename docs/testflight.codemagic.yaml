@@ -1,0 +1,50 @@
+# Release template: enable only after configuring the feed_connor group and
+# the Feed Connor ASC integration as described in DEPLOYMENT.md.
+workflows:
+  testflight:
+    name: Private TestFlight
+    instance_type: mac_mini_m2
+    max_build_duration: 60
+    integrations:
+      app_store_connect: Feed Connor ASC
+    environment:
+      xcode: latest
+      node: 22
+      groups:
+        - feed_connor
+      ios_signing:
+        distribution_type: app_store
+        bundle_identifier: $APP_BUNDLE_ID
+    scripts:
+      - name: Require original assets and service configuration
+        script: |
+          set -eu
+          python3 scripts/validate_assets.py --require-assets
+          : "${APP_BUNDLE_ID:?Set APP_BUNDLE_ID}"
+          : "${APPLE_TEAM_ID:?Set APPLE_TEAM_ID}"
+          : "${FIREBASE_IOS_PLIST_BASE64:?Set secure Firebase plist}"
+          python3 - <<'PY'
+          import os,base64,pathlib,plistlib
+          data=base64.b64decode(os.environ['FIREBASE_IOS_PLIST_BASE64'],validate=True)
+          assert plistlib.loads(data)['BUNDLE_ID']==os.environ['APP_BUNDLE_ID'], 'Firebase bundle ID mismatch'
+          pathlib.Path('Resources/Firebase/GoogleService-Info.plist').write_bytes(data)
+          bundle=os.environ['APP_BUNDLE_ID']
+          pathlib.Path('Config/Local.xcconfig').write_text(f'APP_BUNDLE_ID = {bundle}\nWIDGET_BUNDLE_ID = {bundle}.widget\nAPP_GROUP_IDENTIFIER = group.{bundle}.shared\nDEVELOPMENT_TEAM = '+os.environ['APPLE_TEAM_ID']+'\nAPS_ENVIRONMENT = production\n')
+          PY
+          python3 scripts/generate_project.py
+      - name: Use signed profiles for app and extension
+        script: xcode-project use-profiles
+      - name: Set unique build number
+        script: agvtool new-version -all "$BUILD_NUMBER"
+      - name: Archive and export
+        script: xcode-project build-ipa --project FeedConnor.xcodeproj --scheme FeedConnor --export-options-plist /Users/builder/export_options.plist
+    artifacts:
+      - build/ios/ipa/*.ipa
+      - /tmp/xcodebuild_logs/*.log
+      - build/ios/xcarchive/*.xcarchive/dSYMs/*.dSYM
+    publishing:
+      app_store_connect:
+        auth: integration
+        submit_to_testflight: true
+        beta_groups:
+          - Lydia and Connor
