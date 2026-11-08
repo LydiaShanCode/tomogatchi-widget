@@ -2,6 +2,7 @@ import WidgetKit
 import SwiftUI
 import AppIntents
 
+@available(iOS 18.0, *)
 struct OpenGiftIntent: AppIntent {
     static var title: LocalizedStringResource = "Open Connor’s gift"
     static var description = IntentDescription("Open FEED CONNOR to choose Eat or Later.")
@@ -46,11 +47,14 @@ struct ConnorWidget: Widget {
     let kind = "ConnorWidget"
     var body: some WidgetConfiguration {
         StaticConfiguration(kind: kind, provider: PetProvider()) { entry in
-            // The single visible word is also an App Intent button when a gift is
-            // pending. Eat/Later live in the native screen so default copy stays one word.
-            if entry.state.pendingGift != nil {
-                Button(intent: OpenGiftIntent()) { PetWidgetView(entry: entry) }.buttonStyle(.plain)
-                    .containerBackground(.white, for: .widget)
+            // OpenURLIntent is iOS 18+. On iOS 17 the view's widgetURL
+            // opens the same native Eat/Later screen without this newer API.
+            if #available(iOS 18.0, *) {
+                if entry.state.pendingGift != nil {
+                    Button(intent: OpenGiftIntent()) { PetWidgetView(entry: entry) }
+                        .buttonStyle(.plain)
+                        .containerBackground(.white, for: .widget)
+                } else { PetWidgetView(entry: entry) }
             } else { PetWidgetView(entry: entry) }
         }
         .configurationDisplayName("FEED CONNOR")

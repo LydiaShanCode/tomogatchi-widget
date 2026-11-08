@@ -82,3 +82,12 @@ now capture the five state/dashboard screens plus Eat/Later using Debug sample
 data in the actual app views. This workflow and these UI tests have not run in
 Linux. See SCREENSHOTS.md for execution and artifact retrieval. No screenshots
 have been produced or native compilation claimed by this setup.
+
+## First Codemagic screenshot run
+
+The supplied artifact bundle contained no screenshots or completed tests. Its
+Xcode result reported a build failure in Widget/ConnorWidget.swift:
+`OpenURLIntent` requires iOS 18, while the deployment target is iOS 17.
+The App Intent and its widget button are now gated to iOS 18+. On iOS 17 the
+existing widgetURL opens the same native gift screen. The fix passed local
+Swift syntax checks; a new macOS screenshot build is still required to verify it.
