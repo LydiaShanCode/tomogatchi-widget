@@ -1,0 +1,21 @@
+name: Backend checks
+on: [push, pull_request, workflow_dispatch]
+jobs:
+  backend:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: backend/functions/package-lock.json
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 21
+      - run: npm ci && npm test
+        working-directory: backend/functions
+      - run: npx --yes firebase-tools@14.27.0 emulators:exec --project demo-feed-connor --only auth,firestore,functions 'npm --prefix functions run test:rules && cd functions && node --test test/callables.integration.js'
+        working-directory: backend
+      - run: python3 scripts/validate_assets.py

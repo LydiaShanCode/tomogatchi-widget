@@ -1,0 +1,5 @@
+APP_BUNDLE_ID = com.feedconnor.app
+WIDGET_BUNDLE_ID = $(APP_BUNDLE_ID).widget
+APP_GROUP_IDENTIFIER = group.$(APP_BUNDLE_ID).shared
+APS_ENVIRONMENT = development
+#include? "Local.xcconfig"

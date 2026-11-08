@@ -1,0 +1,15 @@
+.DS_Store
+build/
+DerivedData/
+*.xcuserstate
+xcuserdata/
+GoogleService-Info.plist
+backend/functions/node_modules/
+backend/functions/lib/
+backend/*debug.log
+.env*
+!.env.example
+*.p12
+*.mobileprovision
+*.p8
+Config/Local.xcconfig
