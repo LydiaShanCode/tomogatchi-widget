@@ -15,12 +15,15 @@ workflows:
         script: xcodebuild -resolvePackageDependencies -project FeedConnor.xcodeproj -scheme FeedConnor
       - name: Build app and widget and run state tests
         script: |
+          set -euo pipefail
+          mkdir -p build
           DEVICE_ID=$(xcrun simctl list devices available -j | python3 -c 'import sys,json; d=json.load(sys.stdin); print(next(x["udid"] for v in d["devices"].values() for x in v if x["name"].startswith("iPhone")))')
-          xcodebuild test -project FeedConnor.xcodeproj -scheme FeedConnor -destination "platform=iOS Simulator,id=$DEVICE_ID" -resultBundlePath build/StateTests.xcresult CODE_SIGNING_ALLOWED=NO
+          xcodebuild test -project FeedConnor.xcodeproj -scheme FeedConnor -destination "platform=iOS Simulator,id=$DEVICE_ID,arch=arm64" -resultBundlePath build/StateTests.xcresult ARCHS=arm64 ONLY_ACTIVE_ARCH=YES CODE_SIGNING_ALLOWED=NO 2>&1 | tee build/ios-validation.log
       - name: Backend tests
         script: cd backend/functions && npm ci && npm test
     artifacts:
       - build/StateTests.xcresult
+      - build/ios-validation.log
       - /tmp/xcodebuild_logs/*.log
   screenshots:
     name: Native app screenshots (sample data)
@@ -36,9 +39,10 @@ workflows:
           python3 scripts/generate_project.py
       - name: Capture native Simulator screenshots
         script: |
-          set -eu
+          set -euo pipefail
+          mkdir -p build
           DEVICE_ID=$(xcrun simctl list devices available -j | python3 -c 'import sys,json; d=json.load(sys.stdin); print(next(x["udid"] for v in d["devices"].values() for x in v if x["name"].startswith("iPhone")))')
-          xcodebuild test -project FeedConnor.xcodeproj -scheme FeedConnor -configuration Debug -only-testing:FeedConnorUITests -destination "platform=iOS Simulator,id=$DEVICE_ID" -parallel-testing-enabled NO -resultBundlePath build/Screenshots.xcresult CODE_SIGNING_ALLOWED=NO
+          xcodebuild test -project FeedConnor.xcodeproj -scheme FeedConnor -configuration Debug -only-testing:FeedConnorUITests -destination "platform=iOS Simulator,id=$DEVICE_ID,arch=arm64" -parallel-testing-enabled NO -resultBundlePath build/Screenshots.xcresult ARCHS=arm64 ONLY_ACTIVE_ARCH=YES CODE_SIGNING_ALLOWED=NO 2>&1 | tee build/screenshots-build.log
       - name: Export screenshot attachments
         script: |
           set -eu
@@ -55,3 +59,4 @@ workflows:
       - build/screenshots/**
       - build/FEED-CONNOR-native-screenshots.zip
       - build/Screenshots.xcresult
+      - build/screenshots-build.log

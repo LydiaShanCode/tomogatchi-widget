@@ -37,7 +37,7 @@ file('Config/Local.xcconfig')
 def configs(key,extra):
     arr=[]
     for name in ['Debug','Release']:
-        values={**common,**extra,'SWIFT_OPTIMIZATION_LEVEL':'-Onone' if name=='Debug' else '-O','DEBUG_INFORMATION_FORMAT':'dwarf' if name=='Debug' else 'dwarf-with-dsym'}
+        values={**common,**extra,'ONLY_ACTIVE_ARCH':'YES' if name=='Debug' else 'NO','SWIFT_OPTIMIZATION_LEVEL':'-Onone' if name=='Debug' else '-O','DEBUG_INFORMATION_FORMAT':'dwarf' if name=='Debug' else 'dwarf-with-dsym'}
         if name=='Debug':values['SWIFT_ACTIVE_COMPILATION_CONDITIONS']='DEBUG'
         arr.append(ref(obj(key+name,'XCBuildConfiguration',name=name,buildSettings=values,baseConfigurationReference=ref(file('Config/Base.xcconfig')))))
     return obj(key+'configs','XCConfigurationList',buildConfigurations=arr,defaultConfigurationIsVisible='0',defaultConfigurationName='Release')

@@ -91,3 +91,15 @@ Xcode result reported a build failure in Widget/ConnorWidget.swift:
 The App Intent and its widget button are now gated to iOS 18+. On iOS 17 the
 existing widgetURL opens the same native gift screen. The fix passed local
 Swift syntax checks; a new macOS screenshot build is still required to verify it.
+
+## Firebase simulator architecture failure
+
+The next supplied Codemagic log showed Firebase products linking for arm64,
+while the app's Swift driver failed for x86_64 with missing FirebaseAuth,
+FirebaseFirestore and FirebaseFunctions module dependencies. Both M2 simulator
+workflows now explicitly select arm64 and pass ARCHS=arm64 plus ONLY_ACTIVE_ARCH=YES
+to every target, including packages. Generated Debug configurations also build
+only the active architecture. Release configurations retain normal multi-architecture
+settings. Full build logs are exported; pipefail preserves xcodebuild failures.
+Structural checks passed locally; the corrected native build still needs to run
+in Codemagic before screenshot capture can be confirmed.
