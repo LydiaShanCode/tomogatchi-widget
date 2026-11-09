@@ -1,8 +1,0 @@
-{
-  "idle_01": {"width":125,"height":131,"neckX":62,"neckY":46,"visibleHeight":131},
-  "idle_02": {"width":136,"height":146,"neckX":61,"neckY":58,"visibleHeight":146},
-  "hungry_01": {"width":134,"height":138,"neckX":62,"neckY":42,"visibleHeight":138},
-  "hungry_02": {"width":154,"height":141,"neckX":66,"neckY":42,"visibleHeight":141},
-  "low_energy_01": {"width":149,"height":147,"neckX":66,"neckY":47,"visibleHeight":130},
-  "low_energy_02": {"width":165,"height":152,"neckX":62,"neckY":53,"visibleHeight":130}
-}

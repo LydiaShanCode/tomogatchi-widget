@@ -6,7 +6,7 @@ must perform the service setup below. Do not paste credentials into chat or Git.
 
 ## 1. Supply the original art
 
-All six body sprites and all three photographic head cutouts are integrated in
+Three five-frame body sprite sheets and three photographic head cutouts are integrated in
 `Resources/Character/`. The revised expression mapping is smiling = FED,
 unimpressed = HUNGRY, glasses = TIRED, as listed in the folder's README.
 Do not generate replacements or alter faces. Run:
@@ -16,8 +16,8 @@ python3 scripts/validate_assets.py --require-assets
 ```
 
 The validator prints dimensions and SHA256 hashes without rewriting files. Release
-CI requires all nine; body dimensions are checked against layout.json rather
-than resized. Head canvas sizes must be consistent. Review all
+CI requires all six PNGs; five-frame atlas dimensions and neck anchors are
+checked against animations.json rather than resizing images. Head canvas sizes must be consistent. Review all
 four widget previews at small/medium sizes and Lydia's dashboard on macOS. If the
 photo/body neck alignment needs tuning, change only layout constants, not PNG data.
 Keep original files intact; obtain permission to distribute the photographs.
@@ -88,7 +88,7 @@ is enforced by code even before TTL deletes the documents.
 2. The root configuration contains **ios-validation** and **screenshots** only,
    so configuration discovery works without any signing integrations or secrets.
    Run **screenshots** for app captures or **ios-validation** first. It resolves Firebase iOS SDK 11.15.0, builds the
-   app and extension, and runs six state XCTest cases on an available iPhone
+   app and extension, and runs state/animation XCTest cases on an available iPhone
    Simulator. Missing Firebase config intentionally shows setup instructions;
    missing heads show a dashed outline above the supplied bodies. No signing is needed for this workflow.
 3. Create the `feed_connor` environment-variable group with:
@@ -111,7 +111,7 @@ in its own build machine, and signing keys are files, not HTTP request tokens.
    the change, then check the configuration in Codemagic again. The template
    intentionally uses `$APP_BUNDLE_ID` from the now-configured variable group.
    In App Store Connect create a TestFlight tester group named **Lydia and Connor**.
-5. Run **testflight** after all nine originals and Firebase config are present.
+5. Run **testflight** after all character assets and Firebase config are present.
    It checks assets/config, selects provisioning profiles, assigns BUILD_NUMBER,
    archives both targets, exports an IPA and uploads it. Make sure BUILD_NUMBER
    exceeds any already uploaded version. Adjust it in Codemagic if needed.

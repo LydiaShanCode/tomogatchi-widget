@@ -82,11 +82,14 @@ struct PairingView: View {
 struct AnimatedPet: View {
     let state: PetSnapshot
     var eating = false
+    var dancing = false
     var body: some View {
-        TimelineView(.animation(minimumInterval: 0.35, paused: ScreenshotFixtures.active)) { context in
-            let frame = ScreenshotFixtures.active ? 1 : Int(context.date.timeIntervalSince1970 / 0.35) % 2 + 1
+        TimelineView(.animation(minimumInterval: 0.12, paused: ScreenshotFixtures.active && !dancing)) { context in
+            let mood: Mood = eating ? .fed : state.bodyMood(at: context.date)
+            let animation = BodyAnimation.resolve(mood: mood, dancing: dancing && !eating)
+            let frame = ScreenshotFixtures.active && !dancing ? 1 : animation.frame(at: context.date.timeIntervalSince1970)
             VStack(spacing: 20) {
-                CharacterView(mood: eating ? .fed : state.bodyMood(at: context.date), frame: frame, food: eating ? nil : state.pendingGift?.food)
+                CharacterView(mood: mood, frame: frame, food: eating ? nil : state.pendingGift?.food, animation: animation)
                     .frame(height: 250)
                     .scaleEffect(eating ? 1.04 : 1)
                     .animation(.easeInOut(duration: 0.3).repeatCount(3, autoreverses: true), value: eating)
@@ -100,10 +103,11 @@ struct Dashboard: View {
     @Binding var showGift: Bool
     @State private var food: Food = .apple
     @State private var mealKind = "Lunch"
+    @State private var dancing = false
     var body: some View {
         ScrollView {
             VStack(spacing: 28) {
-                AnimatedPet(state: model.snapshot, eating: model.eating)
+                AnimatedPet(state: model.snapshot, eating: model.eating, dancing: dancing)
                 if let code = model.invitation {
                     Text("PAIRING CODE\n\(code)\nExpires in 15 minutes").multilineTextAlignment(.center).textSelection(.enabled)
                     ShareLink(item: "FEED CONNOR pairing code: \(code)") { Text("Share code privately") }
@@ -116,7 +120,20 @@ struct Dashboard: View {
                     Button("Send") { Task { await model.action("sendGift", ["food": food.rawValue, "requestID": UUID().uuidString]) } }
                     GiftHistory(gifts: model.snapshot.gifts)
                 } else {
-                    if model.snapshot.pendingGift != nil { Button("Open gift") { showGift = true } }
+                    HStack(spacing: 40) {
+                        Button { showGift = true } label: {
+                            Text("EAT").frame(minWidth: 44, minHeight: 44)
+                        }
+                        .accessibilityLabel("Eat gift")
+                        .disabled(model.snapshot.pendingGift == nil)
+                        Button { dancing = true } label: {
+                            Image(systemName: "star.fill").font(.system(size: 22, weight: .regular))
+                                .frame(minWidth: 44, minHeight: 44)
+                        }
+                        .accessibilityLabel("Dance")
+                        .accessibilityIdentifier("danceButton")
+                        .disabled(dancing)
+                    }
                     Picker("Meal", selection: $mealKind) {
                         ForEach(["Breakfast", "Lunch", "Dinner", "Snack"], id: \.self) { Text($0).tag($0) }
                     }.pickerStyle(.menu)
@@ -133,6 +150,14 @@ struct Dashboard: View {
                 }
             }.padding(28).disabled(model.busy)
         }
+        .task(id: dancing) {
+            guard dancing else { return }
+            do {
+                try await Task.sleep(for: .seconds(3))
+                dancing = false
+            } catch { /* SwiftUI cancels this task when the view disappears. */ }
+        }
+        .onDisappear { dancing = false }
     }
 }
 struct ParentDetails: View {

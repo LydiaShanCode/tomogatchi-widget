@@ -13,7 +13,7 @@ final class ScreenshotTests: XCTestCase {
         attachment.lifetime = .keepAlways
         add(attachment)
         if scenario == "gift" {
-            app.buttons["Open gift"].tap()
+            app.buttons["Eat gift"].tap()
             XCTAssertTrue(app.buttons["Eat"].waitForExistence(timeout: 5))
             XCTAssertTrue(app.buttons["Later"].exists)
             let interaction = XCTAttachment(screenshot: app.screenshot())
@@ -50,5 +50,24 @@ final class ScreenshotTests: XCTestCase {
     @MainActor func testWidgetMediumHungry() { captureWidget("hungry", size: "medium") }
     @MainActor func testWidgetMediumTired() { captureWidget("tired", size: "medium") }
     @MainActor func testWidgetMediumGift() { captureWidget("gift", size: "medium") }
+
+    @MainActor func testStarTriggersDanceThenRestoresHungryPose() {
+        let app = XCUIApplication()
+        app.launchArguments = ["-screenshot", "hungry"]
+        app.launch()
+        let star = app.buttons["danceButton"]
+        XCTAssertTrue(star.waitForExistence(timeout: 20))
+        let character = app.descendants(matching: .any).matching(identifier: "connorCharacter").firstMatch
+        XCTAssertEqual(character.value as? String, "hungry")
+        star.tap()
+        XCTAssertTrue(XCTWaiter.wait(for: [XCTNSPredicateExpectation(predicate: NSPredicate(format: "value == %@", "dancing"), object: character)], timeout: 2) == .completed)
+        let attachment = XCTAttachment(screenshot: app.screenshot())
+        attachment.name = "FEED-CONNOR-STAR-DANCE"
+        attachment.lifetime = .keepAlways
+        add(attachment)
+        XCTAssertTrue(XCTWaiter.wait(for: [XCTNSPredicateExpectation(predicate: NSPredicate(format: "value == %@", "hungry"), object: character)], timeout: 5) == .completed)
+        XCTAssertTrue(app.staticTexts["HUNGRY"].exists)
+        app.terminate()
+    }
 
 }

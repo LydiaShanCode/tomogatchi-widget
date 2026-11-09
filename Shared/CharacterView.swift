@@ -9,52 +9,68 @@ enum Minimal {
         return .system(size: size, weight: .regular, design: .monospaced)
     }
 }
-private struct SpriteLayout: Decodable {
+private struct SpriteFrame: Decodable {
+    let x: CGFloat
+    let y: CGFloat
     let width: CGFloat
     let height: CGFloat
     let neckX: CGFloat
     let neckY: CGFloat
-    let visibleHeight: CGFloat
-    static let supplied: [String: SpriteLayout] = {
-        guard let url = Bundle.main.url(forResource: "layout", withExtension: "json", subdirectory: "Character"),
-              let data = try? Data(contentsOf: url),
-              let layouts = try? JSONDecoder().decode([String: SpriteLayout].self, from: data) else { return [:] }
-        return layouts
+}
+private struct SpriteSheet: Decodable {
+    let image: String
+    let width: CGFloat
+    let height: CGFloat
+    let frames: [SpriteFrame]
+}
+private struct SpriteAtlas: Decodable {
+    let pixelScale: CGFloat
+    let animations: [String: SpriteSheet]
+    static let supplied: SpriteAtlas? = {
+        guard let url = Bundle.main.url(forResource: "animations", withExtension: "json", subdirectory: "Character"),
+              let data = try? Data(contentsOf: url) else { return nil }
+        return try? JSONDecoder().decode(SpriteAtlas.self, from: data)
     }()
 }
 struct CharacterView: View {
     var mood: Mood
     var frame: Int = 1
     var food: Food? = nil
+    var animation: BodyAnimation? = nil
     private var head: String {
         switch mood { case .fed, .gift: "connor-fed"; case .hungry: "connor-hungry"; case .tired: "connor-starving" }
     }
-    private var bodyAsset: String {
-        let prefix: String
-        switch mood { case .fed, .gift: prefix = "idle"; case .hungry: prefix = "hungry"; case .tired: prefix = "low_energy" }
-        return String(format: "%@_%02d", prefix, frame)
-    }
-    private func asset(_ name: String) -> UIImage? {
-        guard let url = Bundle.main.url(forResource: name, withExtension: "png", subdirectory: "Character") else { return nil }
-        return UIImage(contentsOfFile: url.path)
-    }
+    private var bodyAnimation: BodyAnimation { animation ?? .resolve(mood: mood) }
+    private static let images: [String: UIImage] = {
+        var images: [String: UIImage] = [:]
+        for name in ["connor-fed", "connor-hungry", "connor-starving", "idle-sheet", "hungry-sheet", "dancing-sheet"] {
+            if let url = Bundle.main.url(forResource: name, withExtension: "png", subdirectory: "Character"),
+               let image = UIImage(contentsOfFile: url.path) { images[name] = image }
+        }
+        return images
+    }()
+    private func asset(_ name: String) -> UIImage? { Self.images[name] }
     var body: some View {
         GeometryReader { geometry in
             let size = min(geometry.size.width / 1.45, geometry.size.height)
             ZStack {
-                // Preserve the supplied PNGs and use their original pixel scale.
-                // Per-frame neck anchors compensate for different source canvases.
-                if let bodyImage = asset(bodyAsset), let layout = SpriteLayout.supplied[bodyAsset] {
-                    let unit = size * 0.0062
+                // Draw one atlas cell at a shared pixel scale. Original sheets
+                // remain intact; each frame attaches to the same neck point.
+                if let atlas = SpriteAtlas.supplied,
+                   let sheet = atlas.animations[bodyAnimation.rawValue],
+                   let bodyImage = asset(sheet.image), !sheet.frames.isEmpty {
+                    let index = max(0, frame - 1) % sheet.frames.count
+                    let cell = sheet.frames[index]
+                    let unit = size * atlas.pixelScale
                     Image(uiImage: bodyImage).resizable().interpolation(.none)
-                        .frame(width: layout.width * unit, height: layout.height * unit)
-                        // The two low-energy source files include sheet captions
-                        // below the entire body. Hide only that annotation strip.
-                        .frame(width: layout.width * unit, height: layout.visibleHeight * unit, alignment: .top)
+                        .frame(width: sheet.width * unit, height: sheet.height * unit)
+                        .offset(x: (sheet.width / 2 - cell.x - cell.width / 2) * unit,
+                                y: (sheet.height / 2 - cell.y - cell.height / 2) * unit)
+                        .frame(width: cell.width * unit, height: cell.height * unit)
                         .clipped()
                         .position(
-                            x: geometry.size.width / 2 + (layout.width / 2 - layout.neckX) * unit,
-                            y: geometry.size.height / 2 + size * 0.02 + (layout.visibleHeight / 2 - layout.neckY) * unit
+                            x: geometry.size.width / 2 + (cell.width / 2 - cell.neckX) * unit,
+                            y: geometry.size.height / 2 + size * 0.02 + (cell.height / 2 - cell.neckY) * unit
                         )
                 }
                 if let headImage = asset(head) {
@@ -73,6 +89,8 @@ struct CharacterView: View {
                 }
             }
         }
+        .accessibilityIdentifier("connorCharacter")
+        .accessibilityValue(bodyAnimation.rawValue)
         .accessibilityLabel("Connor, \(mood.rawValue.lowercased())\(food.map { ", gift: \($0.name)" } ?? "")")
     }
 }

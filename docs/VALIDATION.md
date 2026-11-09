@@ -115,3 +115,14 @@ Local checks cover Swift syntax, the project source memberships, YAML and asset
 validation; macOS compilation and these new captures remain unrun here. The
 gallery captures are native layout previews rather than installed Home Screen
 widget screenshots.
+
+## Approved abstract animation integration
+
+Replaced the older two-frame body files with the approved idle/hungry/dancing
+five-frame sheets. The original subtle idle version was restored before import.
+The three head cutouts are unchanged. Atlas validation checks all five rectangles
+and anchors; the app and widget share the same renderer. New unit cases cover
+frame looping, hunger mapping and dance override. A UI test taps the star while
+hungry and verifies dancing begins and hungry pose resumes without changing the
+label. These native tests require the next Codemagic run; local Swift syntax and
+configuration/asset checks do not establish runtime success.

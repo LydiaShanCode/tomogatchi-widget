@@ -2,18 +2,25 @@
 
 ## Shared state and visual contract
 
-`Shared/Models.swift` is Foundation-only and compiled into the app, extension and
-unit tests. `Shared/CharacterView.swift` composes separate original head and body
-PNG views without changing image data. The six supplied body files have different
-canvas dimensions; layout.json records each source size and neck anchor. A common
-pixel scale keeps body proportions stable. The low-energy viewports exclude the
-source sheet captions below the complete body. The shared on-screen neck anchor
-is fixed; all three photographic head cutouts are present. Inspect native
-previews before accepting photo alignment. The revised expression mapping is
-FED = smiling, HUNGRY = unimpressed without glasses, TIRED = glasses.
+`Shared/Models.swift` and `Shared/BodyAnimation.swift` are Foundation-only and
+compiled into app/extension and the relevant unit tests. `Shared/CharacterView.swift`
+composes photographic head cutouts with one cell of the approved body atlas.
+The abstract body sheets contain five frames each: idle, hungry and dancing.
+`animations.json` stores source rectangles, per-frame neck anchors and a common
+pixel scale. Source PNGs and photographic faces are not modified by rendering.
 
-The app advances body frames every 0.35 seconds with TimelineView. WidgetKit uses
-frame 1 and 15-minute static entries over six hours; iOS decides refresh timing.
+The app uses TimelineView and animation-specific timing: idle 180 ms/frame,
+hungry 150 ms/frame, dancing 120 ms/frame. The approved original subtle idle loop
+is retained. Hungry and tired both use the new hungry body with the corresponding
+photographic head. A pending gift preserves the underlying mood/pose.
+
+Connor's star button sets local dancing state for three seconds. This temporarily
+overrides the body animation, then restores the current hunger pose. The task is
+cancelled when the dashboard disappears. It does not call Firebase, consume gifts,
+change hunger, log meals or notify Lydia. EAT opens the existing explicit Eat/Later
+interaction and is disabled without a pending gift. WidgetKit uses a static frame;
+continuous animation and the star's dance interaction are in the main app.
+
 The character is horizontally centered in a reserved illustration area, with the
 word beneath it. The optional food sits beside the character. No photo is cropped.
 Small and medium default widgets display one word only: FED, HUNGRY, TIRED, GIFT.

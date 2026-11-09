@@ -9,10 +9,11 @@ needed. The root configuration excludes the unconfigured TestFlight workflow;
 its release template is in `docs/testflight.codemagic.yaml`. The runner needs access to this repository and its included PNG assets.
 
 The workflow builds the actual app on an iPhone Simulator and runs five XCUITest
-app cases plus eight widget-preview cases, capturing fourteen screens:
+app cases, a dance interaction test and eight widget-preview cases, capturing the app and widget-preview screens:
 
 - Connor: FED, HUNGRY, TIRED and GIFT
 - Connor: native Eat / Later interaction
+- Connor: star-triggered dance (with a check that hungry pose returns afterward)
 - Lydia: dashboard, last meal, food selector and gift status
 - Widget layouts: FED, HUNGRY, TIRED and GIFT at both small and medium sizes
 

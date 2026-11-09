@@ -2,13 +2,13 @@
 
 A native iOS 17+ SwiftUI app and WidgetKit extension for Lydia and Connor.
 White backgrounds, regular black monospaced text, original photographic heads,
-and two-frame pixel bodies. No web wrapper.
+and five-frame abstract pixel bodies. No web wrapper.
 
 ## What is implemented
 
 - Private, expiring, one-use pairing codes and permanent parent/child roles.
 - Lydia's food picker (apple, bread, steak, bok choy), Send, and gift status history.
-- Connor's Eat/Later flow. Eating sets a 30-minute happy pose; it never logs a meal.
+- Connor's star-triggered dance and Eat/Later flow. Eating sets a 30-minute happy pose; it never logs a meal.
 - Timestamped real meal confirmations, schedule-aware hunger, configurable daily
   reminders, quiet hours, meal history, account linking/recovery and deletion.
 - Firestore live sync, FCM gift/acceptance pushes, background refresh, App Group
@@ -21,12 +21,13 @@ and two-frame pixel bodies. No web wrapper.
 
 ## Current delivery limits
 
-The initial repository contained only `read.me`. **All nine character assets are now integrated.** The six body PNGs remain
-byte-for-byte as supplied. The three uploaded photographs have transparent head
-cutouts: smiling for FED, unimpressed for HUNGRY, and glasses for TIRED, per the
-user's revised mapping. The complete release asset check passes. Per-frame body
-anchors handle different canvas sizes; viewports hide stray sheet captions.
-Final photo-to-body alignment still needs native preview/device acceptance.
+The initial repository contained only `read.me`. **The approved abstract sprites are integrated.** Three transparent five-frame
+sheets provide idle, hungry and dancing bodies. The previous subtle idle animation
+is retained. Connor's star button plays a three-second dance, then returns to the
+current mood; hungry and tired use the tummy-holding sprite. The three photographic
+head cutouts remain unchanged: smiling for FED, unimpressed for HUNGRY, glasses for
+TIRED. All six PNG files and the atlas metadata pass asset validation. Final native
+rendering and behavior need verification through the macOS screenshot workflow.
 
 Firebase, Apple Developer, App Store Connect, and Codemagic must be configured by
 the account owner. No credentials are committed. No signed app has been produced

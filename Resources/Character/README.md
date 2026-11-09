@@ -1,27 +1,28 @@
-# Original character assets
+# Character assets
 
-Received all six transparent body PNGs from `conner_widget_sprites.zip`:
-- idle_01.png / idle_02.png
-- hungry_01.png / hungry_02.png
-- low_energy_01.png / low_energy_02.png
+Photographic head cutouts remain unchanged:
+- connor-fed.png — smiling (FED)
+- connor-hungry.png — unimpressed without glasses (HUNGRY)
+- connor-starving.png — glasses (TIRED)
 
-The PNGs are stored byte-for-byte as supplied. The archive README specifies
-alternating frames every 250–450 ms; the main app uses 350 ms. Widgets use frame 1.
+The approved abstract body packs replace the six older two-frame bodies:
+- idle-sheet.png — five frames, subtle standing/arm pulse (original approved version)
+- hungry-sheet.png — five frames, tummy-holding with growl marks in frames 2–4
+- dancing-sheet.png — five frames, dancing stick arms and legs
 
-The three supplied photographs now have transparent head cutouts:
-- connor-fed.png — smiling (Photo 1)
-- connor-hungry.png — unimpressed, without glasses (Photo 2)
-- connor-starving.png — glasses (Photo 3); displayed as TIRED
+Sheets are copied byte-for-byte from the approved generated packs. Each has a
+transparent background, light torso and dark stick limbs for light backgrounds.
+No body sprite contains a head. The photographic heads are separate layers.
 
-This mapping follows the user's revised choice. The cutouts were prepared with
-background removal from the supplied photographs, on matching transparent square
-canvases. Original photo uploads remain unchanged. Do not intentionally redraw,
-retouch, or substitute faces. Final neck alignment still requires native previews.
+animations.json records five source rectangles and per-frame neck anchors for
+each sheet plus a common pixel scale. The renderer displays a clipped atlas cell;
+it never rewrites the source PNGs. Anchors use the upper torso's center so heads
+remain centered while arms and legs move. Verify final alignment on a device.
 
-The six body canvases differ in size. `layout.json` records original dimensions,
-per-frame neck anchors, and visible heights; the shared renderer uses a common
-pixel scale without rewriting images. Both low-energy files include stray sheet
-captions below the full body. Their viewports exclude only the bottom annotation
-strip (below source y=130), preserving the body and the widget's one-word label.
-Final photo-to-neck alignment still needs visual acceptance with the original heads.
-Run `python3 scripts/validate_assets.py --require-assets` before a release.
+Idle plays at 180 ms/frame, hungry at 150 ms/frame and dancing at 120 ms/frame.
+In the app, the star button plays a three-second dance and returns to the current
+mood. Hungry and tired use the hungry body; their photographic heads still differ.
+Eating a gift briefly uses the fed head and idle body. Widgets display static
+frame 1; they do not run a continuous dance animation.
+
+Run python3 scripts/validate_assets.py --require-assets before building.

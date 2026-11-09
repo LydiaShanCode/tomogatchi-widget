@@ -1,0 +1,146 @@
+{
+  "pixelScale": 0.0018852459016393444,
+  "animations": {
+    "idle": {
+      "image": "idle-sheet",
+      "width": 2172,
+      "height": 724,
+      "frames": [
+        {
+          "x": 0,
+          "y": 0,
+          "width": 434,
+          "height": 724,
+          "neckX": 224.0,
+          "neckY": 434
+        },
+        {
+          "x": 434,
+          "y": 0,
+          "width": 434,
+          "height": 724,
+          "neckX": 220.0,
+          "neckY": 434
+        },
+        {
+          "x": 868,
+          "y": 0,
+          "width": 435,
+          "height": 724,
+          "neckX": 218.0,
+          "neckY": 434
+        },
+        {
+          "x": 1303,
+          "y": 0,
+          "width": 434,
+          "height": 724,
+          "neckX": 215.0,
+          "neckY": 434
+        },
+        {
+          "x": 1737,
+          "y": 0,
+          "width": 435,
+          "height": 724,
+          "neckX": 211.0,
+          "neckY": 434
+        }
+      ]
+    },
+    "hungry": {
+      "image": "hungry-sheet",
+      "width": 2172,
+      "height": 724,
+      "frames": [
+        {
+          "x": 0,
+          "y": 0,
+          "width": 434,
+          "height": 724,
+          "neckX": 221.5,
+          "neckY": 353
+        },
+        {
+          "x": 434,
+          "y": 0,
+          "width": 434,
+          "height": 724,
+          "neckX": 225.5,
+          "neckY": 362
+        },
+        {
+          "x": 868,
+          "y": 0,
+          "width": 435,
+          "height": 724,
+          "neckX": 217.5,
+          "neckY": 374
+        },
+        {
+          "x": 1303,
+          "y": 0,
+          "width": 434,
+          "height": 724,
+          "neckX": 213.0,
+          "neckY": 365
+        },
+        {
+          "x": 1737,
+          "y": 0,
+          "width": 435,
+          "height": 724,
+          "neckX": 213.5,
+          "neckY": 353
+        }
+      ]
+    },
+    "dancing": {
+      "image": "dancing-sheet",
+      "width": 2172,
+      "height": 724,
+      "frames": [
+        {
+          "x": 0,
+          "y": 0,
+          "width": 434,
+          "height": 724,
+          "neckX": 220.0,
+          "neckY": 434
+        },
+        {
+          "x": 434,
+          "y": 0,
+          "width": 434,
+          "height": 724,
+          "neckX": 226.5,
+          "neckY": 434
+        },
+        {
+          "x": 868,
+          "y": 0,
+          "width": 435,
+          "height": 724,
+          "neckX": 218.5,
+          "neckY": 434
+        },
+        {
+          "x": 1303,
+          "y": 0,
+          "width": 434,
+          "height": 724,
+          "neckX": 214.5,
+          "neckY": 434
+        },
+        {
+          "x": 1737,
+          "y": 0,
+          "width": 435,
+          "height": 724,
+          "neckX": 227.5,
+          "neckY": 434
+        }
+      ]
+    }
+  }
+}
