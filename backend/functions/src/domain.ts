@@ -1,5 +1,5 @@
 export type Role = "parent" | "child";
-export const foods = ["apple", "bread", "steak", "bokChoy"];
+export const foods = ["apple", "bread", "steak", "bokChoy", "cake", "croissant"];
 export function validRole(v: unknown): v is Role { return v === "parent" || v === "child"; }
 export function validFood(v: unknown) { return typeof v === "string" && foods.includes(v); }
 export function validID(v: unknown): v is string { return typeof v === "string" && /^[a-zA-Z0-9_-]{1,100}$/.test(v); }

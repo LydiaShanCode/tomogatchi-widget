@@ -12,10 +12,12 @@ struct ConnectedRoot: View {
             Group {
                 if !model.ready { ProgressView("Connecting") }
                 else if model.role == nil { PairingView(model: model) }
+                else if model.role == .parent { FriendsHome(model: model) }
                 else { Dashboard(model: model, showGift: $giftScreen) }
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity).background(.white)
             .navigationBarTitleDisplayMode(.inline)
+            .toolbar(model.role == .parent ? .hidden : .visible, for: .navigationBar)
             .toolbar { ToolbarItem(placement: .principal) { Text("FEED CONNOR").font(Minimal.font()) } }
             .toolbar {
                 ToolbarItem(placement: .topBarLeading) { Button("Widgets") { widgetGallery = true } }
@@ -303,3 +305,124 @@ func previewSnapshot(_ mood: Mood) -> PetSnapshot {
     return state
 }
 #endif
+
+/// The linked-friend home. Gifts are sent through the existing server action;
+/// only the recipient can consume them.
+struct FriendsHome: View {
+    @ObservedObject var model: PetModel
+    @State private var selected: Food = .apple
+    @State private var invite = false
+    @State private var details = false
+    @State private var sent = false
+    private let menu: [Food] = [.apple, .bokChoy, .steak, .cake, .croissant]
+
+    var body: some View {
+        GeometryReader { geometry in
+            ScrollView {
+                VStack(spacing: 0) {
+                    HStack(spacing: 18) {
+                        Button("CONNER") { details = true }
+                            .accessibilityLabel("Conner, selected friend. Open details")
+                        Spacer(minLength: 12)
+                        Button { invite = true } label: {
+                            Label("ADD FRIEND", systemImage: "plus")
+                        }
+                    }
+                    .font(Minimal.font(13)).frame(minHeight: 44)
+                    .padding(.horizontal, 30)
+
+                    Spacer(minLength: 65)
+                    VStack(spacing: 12) {
+                        Text("CONNER CHYUNG").font(Minimal.font(22))
+                        VStack(spacing: 3) {
+                            Text("“A LITERAL CHILD”")
+                            Text(lastMeal)
+                        }.font(Minimal.font(12)).foregroundStyle(.secondary)
+                    }
+                    .padding(.bottom, 48)
+
+                    TimelineView(.animation(minimumInterval: 0.12, paused: ScreenshotFixtures.active && !model.dancing)) { context in
+                        let animation = BodyAnimation.resolve(mood: model.snapshot.bodyMood(at: context.date), dancing: model.dancing)
+                        MiniConsoleView(state: model.snapshot, date: context.date,
+                            frame: ScreenshotFixtures.active ? 1 : animation.frame(at: context.date.timeIntervalSince1970),
+                            animation: animation) {
+                                Button { details = true } label: { Color.clear }
+                                    .accessibilityLabel("View Conner’s pending gifts")
+                            } starControl: {
+                                Button { model.dancing = true } label: { Color.clear }
+                                    .accessibilityLabel("Dance").accessibilityIdentifier("danceButton")
+                            }
+                    }
+                    .frame(width: min(geometry.size.width * 0.8, 430), height: min(geometry.size.width * 0.9, 480))
+
+                    HStack(spacing: 12) {
+                        ForEach(menu) { food in
+                            Button { selected = food; sent = false } label: {
+                                Image(food.artwork).resizable().interpolation(.none).scaledToFit()
+                                    .frame(width: 34, height: 34)
+                                    .saturation(selected == food ? 1 : 0)
+                                    .opacity(selected == food ? 1 : 0.65)
+                                    .frame(minWidth: 44, minHeight: 44)
+                            }
+                            .accessibilityLabel(food.name)
+                            .accessibilityAddTraits(selected == food ? .isSelected : [])
+                        }
+                    }.padding(.top, 25)
+                    Button {
+                        Task {
+                            await model.action("sendGift", ["food": selected.rawValue, "requestID": UUID().uuidString])
+                            if model.error == nil { sent = true }
+                        }
+                    } label: {
+                        Text(sent ? "GIFT SENT · WAITING TO BE EATEN" : "SEND \(selected.name.uppercased()) ↗")
+                            .font(Minimal.font(15)).frame(minHeight: 44)
+                    }.disabled(model.busy).padding(.top, 30)
+                    Spacer(minLength: 65)
+                }.frame(minHeight: geometry.size.height)
+                    .frame(maxWidth: .infinity)
+            }.background(Color(white: 0.97))
+        }
+        .foregroundStyle(Color(white: 0.3)).tint(Color(white: 0.3))
+        .sheet(isPresented: $invite) {
+            NavigationStack {
+                VStack(spacing: 24) {
+                    Text("Your linked friend is Conner.")
+                    Text("This account supports one private pair. Share an invite when the other role is empty.")
+                        .multilineTextAlignment(.center)
+                    Button("Create pairing invite") { Task { await model.action("createInvite") } }
+                        .disabled(model.busy)
+                    if let code = model.invitation {
+                        Text(code).textSelection(.enabled)
+                        ShareLink(item: "FEED CONNOR pairing code: \(code)")
+                    }
+                }.padding(30).font(Minimal.font())
+                    .toolbar { Button("Done") { invite = false } }
+            }
+        }
+        .sheet(isPresented: $details) {
+            NavigationStack {
+                ScrollView {
+                    VStack(spacing: 28) {
+                        ParentDetails(state: model.snapshot)
+                        GiftHistory(gifts: model.snapshot.gifts)
+                        NavigationLink("Settings") { SettingsView(model: model) }
+                        NavigationLink("Widgets") { WidgetGallery() }
+                    }.padding(28)
+                }.font(Minimal.font()).navigationTitle("Conner")
+                    .toolbar { Button("Done") { details = false } }
+            }
+        }
+        .task(id: model.dancing) {
+            guard model.dancing else { return }
+            do { try await Task.sleep(for: .seconds(3)); model.dancing = false }
+            catch { model.dancing = false }
+        }
+        .onDisappear { model.dancing = false }
+    }
+
+    private var lastMeal: String {
+        guard let date = model.snapshot.lastMealAt else { return "NO CONFIRMED MEALS YET" }
+        let hours = max(0, Int(Date().timeIntervalSince(date) / 3600))
+        return hours == 0 ? "LAST SEEN EATING LESS THAN 1 HR AGO" : "LAST SEEN EATING \(hours) HRS AGO"
+    }
+}

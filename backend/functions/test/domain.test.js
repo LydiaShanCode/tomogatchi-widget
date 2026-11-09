@@ -1,8 +1,8 @@
 const {test} = require('node:test');
 const assert = require('node:assert/strict');
 const d = require('../lib/domain');
-test('four foods and two roles only',()=>{
- for(const f of ['apple','bread','steak','bokChoy']) assert.equal(d.validFood(f),true);
+test('supported foods and two roles only',()=>{
+ for(const f of ['apple','bread','steak','bokChoy','cake','croissant']) assert.equal(d.validFood(f),true);
  for(const f of ['pizza','Apple',null,{},'']) assert.equal(d.validFood(f),false);
  assert.equal(d.validRole('parent'),true); assert.equal(d.validRole('child'),true); assert.equal(d.validRole('admin'),false);
 });

@@ -5,11 +5,12 @@ enum Mood: String, Codable, CaseIterable {
 }
 enum Role: String, Codable { case parent, child }
 enum Food: String, Codable, CaseIterable, Identifiable {
-    case apple, bread, steak, bokChoy
+    case apple, bread, steak, bokChoy, cake, croissant
     var id: String { rawValue }
-    var name: String { self == .bokChoy ? "Bok choy" : rawValue.capitalized }
+    var name: String { self == .bokChoy ? "Bok choy" : self == .cake ? "Strawberry cake" : rawValue.capitalized }
+    var artwork: String { self == .bokChoy ? "food-bokchoy" : self == .cake ? "food-strawberry-cake" : self == .bread ? "food-croissant" : "food-" + rawValue }
     var icon: String {
-        switch self { case .apple: "🍎"; case .bread: "🍞"; case .steak: "🥩"; case .bokChoy: "🥬" }
+        switch self { case .apple: "🍎"; case .bread: "🍞"; case .steak: "🥩"; case .bokChoy: "🥬"; case .cake: "🍰"; case .croissant: "🥐" }
     }
 }
 struct MealSchedule: Codable, Identifiable, Equatable {
