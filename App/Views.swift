@@ -376,7 +376,8 @@ struct FriendsHome: View {
                     } label: {
                         Text(sent ? "GIFT SENT · WAITING TO BE EATEN" : "SEND \(selected.name.uppercased()) ↗")
                             .font(Minimal.font(15)).frame(minHeight: 44)
-                    }.disabled(model.busy).padding(.top, 30)
+                    }.accessibilityIdentifier("sendGiftButton")
+                    .disabled(model.busy).padding(.top, 30)
                     Spacer(minLength: 65)
                 }.frame(minHeight: geometry.size.height)
                     .frame(maxWidth: .infinity)

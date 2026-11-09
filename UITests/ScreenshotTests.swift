@@ -7,7 +7,15 @@ final class ScreenshotTests: XCTestCase {
         app.launchArguments = ["-screenshot", scenario]
         app.launch()
         XCTAssertTrue(app.staticTexts[label].firstMatch.waitForExistence(timeout: 20), "Expected the real \(scenario) screen, not setup or loading")
-        if scenario == "parent" { XCTAssertTrue(app.buttons["Send"].exists) }
+        if scenario == "parent" {
+            let send = app.buttons["sendGiftButton"]
+            XCTAssertTrue(send.exists)
+            XCTAssertEqual(send.label, "SEND APPLE ↗")
+            app.buttons["Croissant"].tap()
+            XCTAssertEqual(send.label, "SEND CROISSANT ↗")
+            app.buttons["Apple"].tap()
+            XCTAssertEqual(send.label, "SEND APPLE ↗")
+        }
         let attachment = XCTAttachment(screenshot: app.screenshot())
         attachment.name = "FEED-CONNOR-\(scenario.uppercased())-sample-data"
         attachment.lifetime = .keepAlways
@@ -27,7 +35,7 @@ final class ScreenshotTests: XCTestCase {
     @MainActor func testHungry() { capture("hungry", label: "HUNGRY") }
     @MainActor func testTired() { capture("tired", label: "TIRED") }
     @MainActor func testGift() { capture("gift", label: "GIFT") }
-    @MainActor func testParent() { capture("parent", label: "GIFT") }
+    @MainActor func testParent() { capture("parent", label: "CONNER CHYUNG") }
     @MainActor private func captureWidget(_ mood: String, size: String) {
         let app = XCUIApplication()
         app.launchArguments = ["-screenshot", "widget-\(size)-\(mood)"]
