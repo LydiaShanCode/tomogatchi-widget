@@ -7,7 +7,12 @@ compiled into app/extension and the relevant unit tests. `Shared/CharacterView.s
 composes photographic head cutouts with one cell of the approved body atlas.
 The abstract body sheets contain five frames each: idle, hungry and dancing.
 `animations.json` stores source rectangles, per-frame neck anchors and a common
-pixel scale. Source PNGs and photographic faces are not modified by rendering.
+pixel scale. `heads.json` supplies per-photo tilt correction, chin anchors and
+one common visible head width relative to the widest torso. Heads rotate about
+their chin, which is positioned on the centered neck with a small overlap.
+The renderer fits a shared composition canvas to the available illustration area,
+so complete hair/limbs fit without bobbing or head-size changes during animation.
+Source PNGs and photographic faces are not modified by rendering.
 
 The app uses TimelineView and animation-specific timing: idle 180 ms/frame,
 hungry 150 ms/frame, dancing 120 ms/frame. The approved original subtle idle loop

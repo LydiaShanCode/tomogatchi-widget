@@ -46,6 +46,28 @@ try:
         print(f'{name}: five frames with valid source rectangles and neck anchors')
 except (OSError, ValueError, KeyError, AssertionError, TypeError) as error:
     errors.append(f'Animation atlas: {error}')
+try:
+    composition = json.loads((root/'heads.json').read_text())
+    assert set(composition['heads']) == set(heads)
+    reference = composition['referenceTorsoWidth']
+    ratio = composition['headToTorsoRatio']
+    assert reference > 0 and 1 < ratio < 2
+    canvas = composition['canvas']
+    assert all(math.isfinite(canvas[k]) for k in ['halfWidth', 'top', 'bottom'])
+    assert canvas['halfWidth'] > 0 and canvas['top'] < 0 < canvas['bottom']
+    for name, layout in composition['heads'].items():
+        assert all(isinstance(v, (float, int)) and math.isfinite(v) for v in layout.values())
+        assert -45 <= layout['rotationDegrees'] <= 45
+        assert layout['visibleWidth'] > 0
+        assert 0 <= layout['chinX'] < layout['sourceWidth']
+        assert 0 <= layout['chinY'] < layout['sourceHeight']
+        assert 0 <= layout['overlap'] < layout['targetWidth'] / 4
+        assert math.isclose(layout['targetWidth'], reference * ratio)
+        if name in sizes:
+            assert sizes[name] == (layout['sourceWidth'], layout['sourceHeight'])
+    print('Head layouts: three upright chin anchors, consistent visible size and valid composition canvas')
+except (OSError, ValueError, KeyError, AssertionError, TypeError) as error:
+    errors.append(f'Head composition: {error}')
 if len({sizes[name] for name in heads if name in sizes})>1:
     errors.append('Head canvas sizes differ; inspect positioning before release')
 if missing: print('MISSING ASSETS: '+', '.join(missing))

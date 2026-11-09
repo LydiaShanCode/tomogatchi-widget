@@ -46,7 +46,8 @@
           "neckX": 211.0,
           "neckY": 434
         }
-      ]
+      ],
+      "torsoWidth": 135
     },
     "hungry": {
       "image": "hungry-sheet",
@@ -93,7 +94,8 @@
           "neckX": 213.5,
           "neckY": 353
         }
-      ]
+      ],
+      "torsoWidth": 186
     },
     "dancing": {
       "image": "dancing-sheet",
@@ -140,7 +142,8 @@
           "neckX": 227.5,
           "neckY": 434
         }
-      ]
+      ],
+      "torsoWidth": 128
     }
   }
 }

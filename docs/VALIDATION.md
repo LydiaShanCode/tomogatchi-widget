@@ -126,3 +126,13 @@ frame looping, hunger mapping and dance override. A UI test taps the star while
 hungry and verifies dancing begins and hungry pose resumes without changing the
 label. These native tests require the next Codemagic run; local Swift syntax and
 configuration/asset checks do not establish runtime success.
+
+## Head alignment to supplied references
+
+Added per-photo display-only rotation, measured chin anchors and a common visible
+head width relative to the reference torso. Replaced the fixed head box with an
+anchored composition canvas shared by app/widgets. The entire character fits the
+illustration area; breathing and dancing do not rotate or scale the head.
+The PNGs remain byte-for-byte unchanged. Source/metadata/syntax checks and a
+browser-rendered geometry preview were verified locally. That diagnostic preview
+is not an iOS screenshot; native visual acceptance still requires Codemagic.

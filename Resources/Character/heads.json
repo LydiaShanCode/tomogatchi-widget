@@ -1,0 +1,41 @@
+{
+  "headToTorsoRatio": 1.4,
+  "canvas": {
+    "halfWidth": 188.5,
+    "top": -306.4283619876635,
+    "bottom": 260
+  },
+  "heads": {
+    "connor-fed": {
+      "rotationDegrees": -2,
+      "chinX": 525.5932203389831,
+      "chinY": 1185.3983050847457,
+      "sourceWidth": 1254,
+      "sourceHeight": 1254,
+      "visibleWidth": 1008.4583276910304,
+      "targetWidth": 260.4,
+      "overlap": 18
+    },
+    "connor-hungry": {
+      "rotationDegrees": -32,
+      "chinX": 264.64285714285717,
+      "chinY": 1096.017857142857,
+      "sourceWidth": 1254,
+      "sourceHeight": 1254,
+      "visibleWidth": 967.6733749983563,
+      "targetWidth": 260.4,
+      "overlap": 38
+    },
+    "connor-starving": {
+      "rotationDegrees": -13,
+      "chinX": 361.72222222222223,
+      "chinY": 1196.6597222222222,
+      "sourceWidth": 1254,
+      "sourceHeight": 1254,
+      "visibleWidth": 985.1056846674765,
+      "targetWidth": 260.4,
+      "overlap": 38
+    }
+  },
+  "referenceTorsoWidth": 186
+}
