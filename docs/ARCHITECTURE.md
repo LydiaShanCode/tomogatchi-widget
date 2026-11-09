@@ -26,18 +26,37 @@ change hunger, log meals or notify Lydia. EAT opens the existing explicit Eat/La
 interaction and is disabled without a pending gift. WidgetKit uses a static frame;
 continuous animation and the star's dance interaction are in the main app.
 
-The character is horizontally centered in a reserved illustration area, with the
-word beneath it. The optional food sits beside the character. No photo is cropped.
-Small and medium default widgets display one word only: FED, HUNGRY, TIRED, GIFT.
-A pending gift takes precedence over the label but preserves the current pose.
-Tapping GIFT opens Eat/Later in the app through an App Intent and deep link.
-Lydia sees the same pet widget if she installs it; there is no verbose parent
-widget layout.
+The character is horizontally centered in its illustration area. The app and
+medium widget retain the white, black and regular monospaced visual system.
 
-All backgrounds use white, including the WidgetKit container background. Text
-uses regular black Arial Mono when available, otherwise regular system monospaced.
-The supplied app icon is an original monochrome typographic icon, not a Connor asset.
-Native system sheets and notification presentation are ultimately controlled by iOS.
+The small widget follows the newer supplied reference: square blue pixel-console
+casing, nature photo inside the display, a white layer at exactly 40% opacity over
+the photo, then Connor and any pending gift on top. The overlay never affects the
+face/sprites or casing. EAT and star are baked into the approved shell artwork;
+transparent App Intent buttons cover those two regions. A state word is supplied
+through accessibility rather than added to the small console's display. The medium
+widget retains its single uppercase state word and white container background.
+
+The four landscape options are green hill, golden hills, desert and mountains.
+The device-local selection is stored in the signed App Group and used by timeline
+entries. The native Widgets gallery previews the same small-console component and
+lets the user select a landscape. Inline nature references were visible in chat
+but were not provided as importable files in this executor; missing originals are
+explicitly marked and required asset validation fails until they are imported.
+
+EAT and star use iOS 17-compatible foreground App Intents shared between app and
+extension. Intents write a short-lived App Group action and signal the app. The
+root handles it after auth/profile readiness, including a short cancellable
+foreground handoff check. EAT opens native Eat/Later without auto-consuming a
+gift or logging a meal. Star opens the app and sets the same three-second local
+dance state as its star button. WidgetKit continues to use static frames.
+
+The casing PNG's transparent margins are excluded by a source-coordinate viewport
+and it is fitted to the square widget. Display and button rectangles use the same
+coordinate mapping. The app and extension both bundle Resources/WidgetConsole.
+The Home Screen controls the final container treatment; no phone wallpaper is
+embedded in the widget. Font fallback remains regular system monospaced when
+Arial Mono is unavailable, and no proprietary font files are bundled.
 
 ## Hunger and real meals
 

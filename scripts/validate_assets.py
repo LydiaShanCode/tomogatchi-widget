@@ -70,6 +70,22 @@ except (OSError, ValueError, KeyError, AssertionError, TypeError) as error:
     errors.append(f'Head composition: {error}')
 if len({sizes[name] for name in heads if name in sizes})>1:
     errors.append('Head canvas sizes differ; inspect positioning before release')
+# The small console uses the approved shell and supplied landscape originals.
+console_root = root.parent/'WidgetConsole'
+for name in ['mini-console', 'nature-hill', 'nature-golden-hills', 'nature-desert', 'nature-mountains']:
+    path = console_root/(name+'.png')
+    if not path.exists():
+        missing.append('WidgetConsole/'+path.name)
+        continue
+    data = path.read_bytes()
+    if data[:8] != b'\x89PNG\r\n\x1a\n' or len(data)<33:
+        errors.append(f'{path.name}: invalid PNG')
+        continue
+    width, height = struct.unpack('>II', data[16:24])
+    if width<=0 or height<=0: errors.append(f'{path.name}: invalid dimensions')
+    if name=='mini-console' and (width,height)!=(1254,1254):
+        errors.append('Console shell dimensions do not match source-coordinate layout')
+    print(f'{path.name}: {width}x{height}')
 if missing: print('MISSING ASSETS: '+', '.join(missing))
 for error in errors: print(error, file=sys.stderr)
 if errors or (args.require_assets and missing): sys.exit(1)

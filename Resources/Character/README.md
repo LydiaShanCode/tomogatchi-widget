@@ -30,6 +30,7 @@ Idle plays at 180 ms/frame, hungry at 150 ms/frame and dancing at 120 ms/frame.
 In the app, the star button plays a three-second dance and returns to the current
 mood. Hungry and tired use the hungry body; their photographic heads still differ.
 Eating a gift briefly uses the fed head and idle body. Widgets display static
-frame 1; they do not run a continuous dance animation.
+frame 1. The small widget's star opens the app for dancing; WidgetKit does not
+run a continuous dance animation.
 
 Run python3 scripts/validate_assets.py --require-assets before building.

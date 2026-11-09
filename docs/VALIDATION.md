@@ -136,3 +136,18 @@ illustration area; breathing and dancing do not rotate or scale the head.
 The PNGs remain byte-for-byte unchanged. Source/metadata/syntax checks and a
 browser-rendered geometry preview were verified locally. That diagnostic preview
 is not an iOS screenshot; native visual acceptance still requires Codemagic.
+
+## Small pixel-console widget (awaiting nature originals)
+
+Prepared the small widget with the approved EAT/star shell, source-coordinate
+screen/button rectangles, four landscape choices and a 40% white scenery overlay
+beneath Connor. The medium widget retains its previous layout. App/extension
+source and resource membership, Swift syntax and configuration checks pass. The
+shell bytes match the approved image. iOS 17 foreground App Intents hand off the
+two controls to native gift acceptance/dancing without changing backend data.
+
+The four referenced landscape images are visible in chat but absent as files in
+the executor. No scenery was fabricated or silently substituted. A missing-photo
+placeholder is shown, and required asset validation fails pending the four
+original PNGs. The draft is not a completed visual implementation, nor has this
+version been compiled or captured in iOS.

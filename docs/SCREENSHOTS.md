@@ -33,6 +33,11 @@ fixture arguments. Widget captures show the native in-app preview gallery using
 the exact shared layout from the extension. They are labeled previews, not
 screenshots of widgets installed on the Home Screen.
 
+The small preview now uses the pixel console and a nature-background selector.
+Four original nature PNG files are currently missing from the execution workspace;
+the required asset check stops capture until these files are imported into
+Resources/WidgetConsole. The medium preview retains the minimal white layout.
+
 In the app, tap **Widgets** at the top left to browse the two sizes and four
 states. If Firebase is not configured, tap **Widget previews** on the setup
 screen. Small and medium are the two installable options; mood states change

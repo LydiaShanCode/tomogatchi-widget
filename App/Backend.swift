@@ -15,6 +15,7 @@ final class PetModel: ObservableObject {
     @Published var invitation: String?
     @Published var ready = false
     @Published var eating = false
+    @Published var dancing = false
     private lazy var db = Firestore.firestore()
     private lazy var functions = Functions.functions(region: "us-central1")
     private var profileListener: ListenerRegistration?

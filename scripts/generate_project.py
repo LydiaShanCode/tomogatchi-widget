@@ -43,13 +43,13 @@ def configs(key,extra):
     return obj(key+'configs','XCConfigurationList',buildConfigurations=arr,defaultConfigurationIsVisible='0',defaultConfigurationName='Release')
 shared=sorted(str(p.relative_to(ROOT)) for p in (ROOT/'Shared').glob('*.swift'))
 for name,target,product,sources,resources,extra,ptype in [
- ('FeedConnor',app,products[0],shared+sorted(str(p.relative_to(ROOT)) for p in (ROOT/'App').glob('*.swift')),['Assets.xcassets','Resources/Character','Resources/Firebase','Resources/PrivacyInfo.xcprivacy'],{'PRODUCT_BUNDLE_IDENTIFIER':'$(APP_BUNDLE_ID)','INFOPLIST_FILE':'Config/App-Info.plist','CODE_SIGN_ENTITLEMENTS':'Config/App.entitlements','ASSETCATALOG_COMPILER_APPICON_NAME':'AppIcon'},'application'),
- ('ConnorWidget',widget,products[1],shared+['Widget/ConnorWidget.swift'],['Resources/Character','Resources/PrivacyInfo.xcprivacy'],{'PRODUCT_BUNDLE_IDENTIFIER':'$(WIDGET_BUNDLE_ID)','INFOPLIST_FILE':'Config/Widget-Info.plist','CODE_SIGN_ENTITLEMENTS':'Config/Widget.entitlements','APPLICATION_EXTENSION_API_ONLY':'YES','SKIP_INSTALL':'YES'},'app-extension'),
+ ('FeedConnor',app,products[0],shared+sorted(str(p.relative_to(ROOT)) for p in (ROOT/'App').glob('*.swift')),['Assets.xcassets','Resources/Character','Resources/Firebase','Resources/PrivacyInfo.xcprivacy','Resources/WidgetConsole'],{'PRODUCT_BUNDLE_IDENTIFIER':'$(APP_BUNDLE_ID)','INFOPLIST_FILE':'Config/App-Info.plist','CODE_SIGN_ENTITLEMENTS':'Config/App.entitlements','ASSETCATALOG_COMPILER_APPICON_NAME':'AppIcon'},'application'),
+ ('ConnorWidget',widget,products[1],shared+['Widget/ConnorWidget.swift'],['Resources/Character','Resources/PrivacyInfo.xcprivacy','Resources/WidgetConsole'],{'PRODUCT_BUNDLE_IDENTIFIER':'$(WIDGET_BUNDLE_ID)','INFOPLIST_FILE':'Config/Widget-Info.plist','CODE_SIGN_ENTITLEMENTS':'Config/Widget.entitlements','APPLICATION_EXTENSION_API_ONLY':'YES','SKIP_INSTALL':'YES'},'app-extension'),
  ('FeedConnorTests',tests,products[2],['Shared/Models.swift','Shared/BodyAnimation.swift','Tests/StateTests.swift','Tests/AnimationTests.swift'],[],{'PRODUCT_BUNDLE_IDENTIFIER':'$(APP_BUNDLE_ID).tests','GENERATE_INFOPLIST_FILE':'YES','CODE_SIGNING_ALLOWED':'NO'},'bundle.unit-test'),
  ('FeedConnorUITests',uitests,products[3],['UITests/ScreenshotTests.swift'],[],{'PRODUCT_BUNDLE_IDENTIFIER':'$(APP_BUNDLE_ID).uitests','GENERATE_INFOPLIST_FILE':'YES','CODE_SIGNING_ALLOWED':'NO','TEST_TARGET_NAME':'FeedConnor'},'bundle.ui-testing')]:
     sourcePhase=obj(name+'sources','PBXSourcesBuildPhase',buildActionMask='2147483647',files=[build(name,p) for p in sources],runOnlyForDeploymentPostprocessing='0')
     # Folder references retain Character/ and Firebase/ subdirectories in the bundle.
-    resourcePhase=obj(name+'resources','PBXResourcesBuildPhase',buildActionMask='2147483647',files=[build(name,p,'folder' if p in ['Resources/Character','Resources/Firebase'] else None) for p in resources],runOnlyForDeploymentPostprocessing='0')
+    resourcePhase=obj(name+'resources','PBXResourcesBuildPhase',buildActionMask='2147483647',files=[build(name,p,'folder' if p in ['Resources/Character','Resources/Firebase','Resources/WidgetConsole'] else None) for p in resources],runOnlyForDeploymentPostprocessing='0')
     frameworks=[];packages=[]
     if name=='FeedConnor':
         for module in ['FirebaseAuth','FirebaseFirestore','FirebaseFunctions','FirebaseMessaging']:

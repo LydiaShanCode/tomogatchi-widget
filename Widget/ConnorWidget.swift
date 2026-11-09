@@ -14,6 +14,7 @@ struct OpenGiftIntent: AppIntent {
 struct PetEntry: TimelineEntry {
     var date: Date
     var state: PetSnapshot
+    var landscape: ConsoleLandscape = SharedStore.consoleLandscape
 }
 struct PetProvider: TimelineProvider {
     func placeholder(in context: Context) -> PetEntry { PetEntry(date: Date(), state: sample(.fed)) }
@@ -29,31 +30,43 @@ struct PetProvider: TimelineProvider {
     }
 }
 struct PetWidgetView: View {
+    @Environment(\.widgetFamily) private var family
     var entry: PetEntry
     var body: some View {
+        if family == .systemSmall {
+            MiniConsoleView(state: entry.state, date: entry.date, landscape: entry.landscape) {
+                Button(intent: ConsoleEatIntent()) { Color.clear }
+                    .buttonStyle(.plain).accessibilityLabel("Eat gift")
+                    .accessibilityHint("Open the app to choose Eat or Later")
+            } starControl: {
+                Button(intent: ConsoleDanceIntent()) { Color.clear }
+                    .buttonStyle(.plain).accessibilityLabel("Dance")
+                    .accessibilityHint("Open the app and make Connor dance")
+            }
+            .containerBackground(.clear, for: .widget)
+        } else {
+            if #available(iOS 18.0, *), entry.state.pendingGift != nil {
+                Button(intent: OpenGiftIntent()) { mediumContent }
+                    .buttonStyle(.plain).containerBackground(.white, for: .widget)
+            } else { mediumContent }
+        }
+    }
+    private var mediumContent: some View {
         PetWidgetContent(state: entry.state, date: entry.date)
-        .containerBackground(.white, for: .widget)
-        .widgetURL(URL(string: entry.state.pendingGift == nil ? "feedconnor://home" : "feedconnor://gift"))
-        .accessibilityElement(children: .combine)
+            .containerBackground(.white, for: .widget)
+            .widgetURL(URL(string: entry.state.pendingGift == nil ? "feedconnor://home" : "feedconnor://gift"))
     }
 }
+
 @main
 struct ConnorWidget: Widget {
     let kind = "ConnorWidget"
     var body: some WidgetConfiguration {
         StaticConfiguration(kind: kind, provider: PetProvider()) { entry in
-            // OpenURLIntent is iOS 18+. On iOS 17 the view's widgetURL
-            // opens the same native Eat/Later screen without this newer API.
-            if #available(iOS 18.0, *) {
-                if entry.state.pendingGift != nil {
-                    Button(intent: OpenGiftIntent()) { PetWidgetView(entry: entry) }
-                        .buttonStyle(.plain)
-                        .containerBackground(.white, for: .widget)
-                } else { PetWidgetView(entry: entry) }
-            } else { PetWidgetView(entry: entry) }
+            PetWidgetView(entry: entry)
         }
         .configurationDisplayName("FEED CONNOR")
-        .description("Connor and one word. Tap a gift to eat it or leave it for later.")
+        .description("Small pixel console or minimal medium widget. Eat a gift or open the app to dance.")
         .supportedFamilies([.systemSmall, .systemMedium])
         .contentMarginsDisabled()
     }

@@ -31,9 +31,34 @@ struct ConnectedRoot: View {
             } message: { Text(model.error ?? "") }
         }
         .task { if !ScreenshotFixtures.active { await model.connect() } }
-        .onOpenURL { url in if url.host == "gift" { giftScreen = true } }
+        .onOpenURL { url in
+            if url.host == "gift" { giftScreen = true }
+            if url.host == "dance" { model.dancing = true }
+        }
+        .onReceive(NotificationCenter.default.publisher(for: SharedStore.consoleActionNotification).receive(on: RunLoop.main)) { _ in handleConsoleAction() }
+        .onChange(of: model.ready) { _, _ in handleConsoleAction() }
+        .task(id: scenePhase) {
+            guard scenePhase == .active else { return }
+            // App Intents may finish just after foreground activation. This brief
+            // cancellable handoff catches the App Group write from either process.
+            for _ in 0..<10 {
+                handleConsoleAction()
+                do { try await Task.sleep(for: .milliseconds(200)) } catch { return }
+            }
+        }
         .onChange(of: scenePhase) { _, phase in
             if phase == .active, model.role != nil, !ScreenshotFixtures.active { Task { _ = await BackgroundSync.refresh() } }
+        }
+    }
+    private func handleConsoleAction() {
+        guard model.ready, let action = SharedStore.takeConsoleAction() else { return }
+        settings = false
+        widgetGallery = false
+        switch action {
+        case .eat: giftScreen = true
+        case .dance:
+            giftScreen = false
+            model.dancing = true
         }
     }
 }
@@ -103,11 +128,10 @@ struct Dashboard: View {
     @Binding var showGift: Bool
     @State private var food: Food = .apple
     @State private var mealKind = "Lunch"
-    @State private var dancing = false
     var body: some View {
         ScrollView {
             VStack(spacing: 28) {
-                AnimatedPet(state: model.snapshot, eating: model.eating, dancing: dancing)
+                AnimatedPet(state: model.snapshot, eating: model.eating, dancing: model.dancing)
                 if let code = model.invitation {
                     Text("PAIRING CODE\n\(code)\nExpires in 15 minutes").multilineTextAlignment(.center).textSelection(.enabled)
                     ShareLink(item: "FEED CONNOR pairing code: \(code)") { Text("Share code privately") }
@@ -126,13 +150,13 @@ struct Dashboard: View {
                         }
                         .accessibilityLabel("Eat gift")
                         .disabled(model.snapshot.pendingGift == nil)
-                        Button { dancing = true } label: {
+                        Button { model.dancing = true } label: {
                             Image(systemName: "star.fill").font(.system(size: 22, weight: .regular))
                                 .frame(minWidth: 44, minHeight: 44)
                         }
                         .accessibilityLabel("Dance")
                         .accessibilityIdentifier("danceButton")
-                        .disabled(dancing)
+                        .disabled(model.dancing)
                     }
                     Picker("Meal", selection: $mealKind) {
                         ForEach(["Breakfast", "Lunch", "Dinner", "Snack"], id: \.self) { Text($0).tag($0) }
@@ -150,14 +174,14 @@ struct Dashboard: View {
                 }
             }.padding(28).disabled(model.busy)
         }
-        .task(id: dancing) {
-            guard dancing else { return }
+        .task(id: model.dancing) {
+            guard model.dancing else { return }
             do {
                 try await Task.sleep(for: .seconds(3))
-                dancing = false
+                model.dancing = false
             } catch { /* SwiftUI cancels this task when the view disappears. */ }
         }
-        .onDisappear { dancing = false }
+        .onDisappear { model.dancing = false }
     }
 }
 struct ParentDetails: View {
