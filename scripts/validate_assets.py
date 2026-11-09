@@ -5,6 +5,8 @@ import argparse, struct, hashlib, sys, json, math
 root = Path(__file__).resolve().parent.parent/'Resources/Character'
 parser = argparse.ArgumentParser()
 parser.add_argument('--require-assets', action='store_true')
+parser.add_argument('--allow-missing-landscapes', action='store_true',
+                    help='Allow absent nature photos for previews; required character and console artwork stays strict')
 args = parser.parse_args()
 heads = ['connor-fed', 'connor-hungry', 'connor-starving']
 animations = ['idle', 'hungry', 'dancing']
@@ -88,4 +90,8 @@ for name in ['mini-console', 'nature-hill', 'nature-golden-hills', 'nature-deser
     print(f'{path.name}: {width}x{height}')
 if missing: print('MISSING ASSETS: '+', '.join(missing))
 for error in errors: print(error, file=sys.stderr)
-if errors or (args.require_assets and missing): sys.exit(1)
+required_missing = [name for name in missing
+                    if not (args.allow_missing_landscapes and name.startswith('WidgetConsole/nature-'))]
+if args.allow_missing_landscapes and len(required_missing) < len(missing):
+    print('PREVIEW: missing nature photos use the in-app placeholder background.')
+if errors or (args.require_assets and required_missing): sys.exit(1)

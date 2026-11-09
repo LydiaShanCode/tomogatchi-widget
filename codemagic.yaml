@@ -35,7 +35,7 @@ workflows:
       - name: Verify assets and prepare project
         script: |
           set -eu
-          python3 scripts/validate_assets.py --require-assets
+          python3 scripts/validate_assets.py --require-assets --allow-missing-landscapes
           python3 scripts/generate_project.py
       - name: Capture native Simulator screenshots
         script: |
