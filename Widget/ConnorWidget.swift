@@ -31,12 +31,7 @@ struct PetProvider: TimelineProvider {
 struct PetWidgetView: View {
     var entry: PetEntry
     var body: some View {
-        VStack(spacing: 10) {
-            CharacterView(mood: entry.state.bodyMood(at: entry.date), frame: 1, food: entry.state.pendingGift?.food)
-            Text(entry.state.displayMood(at: entry.date).rawValue)
-                .font(Minimal.font(14)).foregroundStyle(.black).padding(.bottom, 2)
-        }
-        .padding(8)
+        PetWidgetContent(state: entry.state, date: entry.date)
         .containerBackground(.white, for: .widget)
         .widgetURL(URL(string: entry.state.pendingGift == nil ? "feedconnor://home" : "feedconnor://gift"))
         .accessibilityElement(children: .combine)
@@ -64,13 +59,14 @@ struct ConnorWidget: Widget {
     }
 }
 func sample(_ mood: Mood) -> PetSnapshot {
-    var state = PetSnapshot()
-    state.preferences.schedules = []
-    state.lastMealAt = Date().addingTimeInterval(mood == .tired ? -28800 : mood == .hungry ? -18000 : 0)
-    if mood == .gift { state.gifts = [Gift(id: "preview", food: .bokChoy, status: "pending", createdAt: Date())] }
-    return state
+    WidgetPreviewData.snapshot(for: mood)
 }
 #Preview("FED", as: .systemSmall) { ConnorWidget() } timeline: { PetEntry(date: Date(), state: sample(.fed)) }
 #Preview("HUNGRY", as: .systemSmall) { ConnorWidget() } timeline: { PetEntry(date: Date(), state: sample(.hungry)) }
 #Preview("TIRED", as: .systemSmall) { ConnorWidget() } timeline: { PetEntry(date: Date(), state: sample(.tired)) }
 #Preview("GIFT", as: .systemSmall) { ConnorWidget() } timeline: { PetEntry(date: Date(), state: sample(.gift)) }
+
+#Preview("FED medium", as: .systemMedium) { ConnorWidget() } timeline: { PetEntry(date: Date(), state: sample(.fed)) }
+#Preview("HUNGRY medium", as: .systemMedium) { ConnorWidget() } timeline: { PetEntry(date: Date(), state: sample(.hungry)) }
+#Preview("TIRED medium", as: .systemMedium) { ConnorWidget() } timeline: { PetEntry(date: Date(), state: sample(.tired)) }
+#Preview("GIFT medium", as: .systemMedium) { ConnorWidget() } timeline: { PetEntry(date: Date(), state: sample(.gift)) }

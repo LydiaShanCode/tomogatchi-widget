@@ -13,7 +13,8 @@ and two-frame pixel bodies. No web wrapper.
   reminders, quiet hours, meal history, account linking/recovery and deletion.
 - Firestore live sync, FCM gift/acceptance pushes, background refresh, App Group
   widget snapshots, static WidgetKit timelines, and an App Intent gift button.
-- App, widget, and unit-test Xcode targets; four widget previews and a parent preview.
+- App, widget, unit-test and UI-test Xcode targets; widget previews in both sizes
+  and an in-app Widgets gallery covering all four states.
 - Firebase callable functions, deny-by-default rules, backend tests, Codemagic
   simulator validation and screenshot workflows, plus a signed TestFlight template
   enabled after account configuration.

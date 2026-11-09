@@ -40,18 +40,23 @@ final class AppDelegate: NSObject, UIApplicationDelegate, MessagingDelegate, UNU
 @main
 struct FeedConnorApp: App {
     @UIApplicationDelegateAdaptor(AppDelegate.self) var delegate
+    @State private var widgetGallery = false
     init() { AppDelegate.configureFirebase() }
     var body: some Scene {
         WindowGroup {
             Group {
-                if ScreenshotFixtures.active || AppDelegate.configured { ConnectedRoot() }
+                if let mood = ScreenshotFixtures.widgetMood {
+                    WidgetGallery(mood: mood, medium: ScreenshotFixtures.widgetMedium)
+                } else if ScreenshotFixtures.active || AppDelegate.configured { ConnectedRoot() }
                 else {
                     VStack(spacing: 24) {
                         Text("FEED CONNOR")
                         Text("Firebase configuration required. Follow docs/DEPLOYMENT.md and add GoogleService-Info.plist to build this app.")
+                        Button("Widget previews") { widgetGallery = true }
                     }.padding(32)
                 }
             }
+            .sheet(isPresented: $widgetGallery) { WidgetGallery() }
             .font(Minimal.font()).foregroundStyle(.black).tint(.black)
             .preferredColorScheme(.light)
         }

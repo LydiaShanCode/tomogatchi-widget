@@ -51,7 +51,7 @@ workflows:
           python3 - <<'PY'
           from pathlib import Path
           images=list(Path('build/screenshots').rglob('*.png'))
-          assert len(images)>=6, f'Expected six native captures, found {len(images)}'
+          assert len(images)>=14, f'Expected 14 captures including eight widget previews, found {len(images)}'
           print('\n'.join(str(p) for p in images))
           PY
           cd build && zip -r FEED-CONNOR-native-screenshots.zip screenshots

@@ -103,3 +103,15 @@ only the active architecture. Release configurations retain normal multi-archite
 settings. Full build logs are exported; pipefail preserves xcodebuild failures.
 Structural checks passed locally; the corrected native build still needs to run
 in Codemagic before screenshot capture can be confirmed.
+
+## Widget options and gallery captures
+
+The widget's character/one-word layout now lives in Shared/PetWidgetContent.swift
+and is used by both the WidgetKit extension and the native WidgetGallery screen.
+The gallery exposes small and medium previews for all four automatic states,
+without relying on Firebase. Eight UI-test captures were added to the screenshots
+workflow, for 14 total screenshots including the existing six app captures.
+Local checks cover Swift syntax, the project source memberships, YAML and asset
+validation; macOS compilation and these new captures remain unrun here. The
+gallery captures are native layout previews rather than installed Home Screen
+widget screenshots.

@@ -28,4 +28,27 @@ final class ScreenshotTests: XCTestCase {
     @MainActor func testTired() { capture("tired", label: "TIRED") }
     @MainActor func testGift() { capture("gift", label: "GIFT") }
     @MainActor func testParent() { capture("parent", label: "GIFT") }
+    @MainActor private func captureWidget(_ mood: String, size: String) {
+        let app = XCUIApplication()
+        app.launchArguments = ["-screenshot", "widget-\(size)-\(mood)"]
+        app.launch()
+        let label = app.staticTexts["widgetSelection"]
+        XCTAssertTrue(label.waitForExistence(timeout: 20))
+        XCTAssertEqual(label.label, "\(mood.uppercased()) · \(size.uppercased())")
+        XCTAssertTrue(app.descendants(matching: .any).matching(identifier: "widgetPreview").firstMatch.exists)
+        let attachment = XCTAttachment(screenshot: app.screenshot())
+        attachment.name = "FEED-CONNOR-WIDGET-PREVIEW-\(size.uppercased())-\(mood.uppercased())"
+        attachment.lifetime = .keepAlways
+        add(attachment)
+        app.terminate()
+    }
+    @MainActor func testWidgetSmallFed() { captureWidget("fed", size: "small") }
+    @MainActor func testWidgetSmallHungry() { captureWidget("hungry", size: "small") }
+    @MainActor func testWidgetSmallTired() { captureWidget("tired", size: "small") }
+    @MainActor func testWidgetSmallGift() { captureWidget("gift", size: "small") }
+    @MainActor func testWidgetMediumFed() { captureWidget("fed", size: "medium") }
+    @MainActor func testWidgetMediumHungry() { captureWidget("hungry", size: "medium") }
+    @MainActor func testWidgetMediumTired() { captureWidget("tired", size: "medium") }
+    @MainActor func testWidgetMediumGift() { captureWidget("gift", size: "medium") }
+
 }

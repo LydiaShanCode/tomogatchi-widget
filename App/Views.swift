@@ -5,6 +5,7 @@ struct ConnectedRoot: View {
     @StateObject private var model = ScreenshotFixtures.makeModel()
     @State private var settings = false
     @State private var giftScreen = false
+    @State private var widgetGallery = false
     @Environment(\.scenePhase) private var scenePhase
     var body: some View {
         NavigationStack {
@@ -17,10 +18,12 @@ struct ConnectedRoot: View {
             .navigationBarTitleDisplayMode(.inline)
             .toolbar { ToolbarItem(placement: .principal) { Text("FEED CONNOR").font(Minimal.font()) } }
             .toolbar {
+                ToolbarItem(placement: .topBarLeading) { Button("Widgets") { widgetGallery = true } }
                 if model.role != nil {
                     ToolbarItem(placement: .topBarTrailing) { Button("Settings") { settings = true } }
                 }
             }
+            .sheet(isPresented: $widgetGallery) { WidgetGallery() }
             .sheet(isPresented: $settings) { SettingsView(model: model) }
             .sheet(isPresented: $giftScreen) { GiftInteraction(model: model) }
             .alert("FEED CONNOR", isPresented: Binding(get: { model.error != nil }, set: { if !$0 { model.error = nil } })) {
